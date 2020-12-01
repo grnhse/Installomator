@@ -169,10 +169,10 @@ log_location="/private/var/log/Installomator.log"
 printlog(){
 
     timestamp=$(date +%F\ %T)
-        
+
     if [[ "$(whoami)" == "root" ]]; then
         echo "$timestamp" "$1" | tee -a $log_location
-    else 
+    else
         echo "$timestamp" "$1"
     fi
 }
@@ -181,7 +181,7 @@ printlog(){
 downloadURLFromGit() { # $1 git user name, $2 git repo name
     gitusername=${1?:"no git user name"}
     gitreponame=${2?:"no git repo name"}
-    
+
     if [[ $type == "pkgInDmg" ]]; then
         filetype="dmg"
     elif [[ $type == "pkgInZip" ]]; then
@@ -189,7 +189,7 @@ downloadURLFromGit() { # $1 git user name, $2 git repo name
     else
         filetype=$type
     fi
-    
+
     if [ -n "$archiveName" ]; then
     downloadURL=$(curl --silent --fail "https://api.github.com/repos/$gitusername/$gitreponame/releases/latest" \
     | awk -F '"' "/browser_download_url/ && /$archiveName\"/ { print \$4; exit }")
@@ -208,7 +208,7 @@ downloadURLFromGit() { # $1 git user name, $2 git repo name
 
 
 xpath() {
-	# the xpath tool changes in Big Sur and now requires the `-e` option	
+	# the xpath tool changes in Big Sur and now requires the `-e` option
 	if [[ $(sw_vers -buildVersion) > "20A" ]]; then
 		/usr/bin/xpath -e $@
 		# alternative: switch to xmllint (which is not perl)
@@ -222,13 +222,13 @@ xpath() {
 getAppVersion() {
     # get all apps matching name
     applist=$(mdfind "kind:application $appName" -0 )
-    if [[ $applist = "" ]]; then        
+    if [[ $applist = "" ]]; then
         printlog "Spotlight not returning any app, trying manually in /Applications."
         if [[ -d "/Applications/$appName" ]]; then
             applist="/Applications/$appName"
         fi
     fi
-     
+
     appPathArray=( ${(0)applist} )
 
     if [[ ${#appPathArray} -gt 0 ]]; then
@@ -376,7 +376,7 @@ mountDMG() {
 
 installFromDMG() {
     mountDMG
-	
+
 	applicationPath="$dmgmount/$appName"
 	printlog "looking for app: $applicationPath"
 	if [[ ! -d $applicationPath ]]; then
@@ -389,19 +389,19 @@ installFromDMG() {
         applicationPath="${filearray[1]}"
         printlog "found app: $applicationPath"
 	fi
-	
+
     installAppWithPath "$applicationPath"
 }
 
 installFromPKG() {
     # verify with spctl
     printlog "Verifying: $archiveName"
-    
-    if ! spctlout=$(spctl -a -vv -t install "$archiveName" 2>&1 ); then        
+
+    if ! spctlout=$(spctl -a -vv -t install "$archiveName" 2>&1 ); then
         printlog "Error verifying $archiveName"
         cleanupAndExit 4
     fi
-    
+
     teamID=$(echo $spctlout | awk -F '(' '/origin=/ {print $2 }' | tr -d '()' )
 
     # Apple signed software has no teamID, grab entire origin instead
@@ -441,17 +441,17 @@ installFromPKG() {
 installFromZIP() {
     # unzip the archive
     printlog "Unzipping $archiveName"
-    
+
     # tar -xf "$archiveName"
 
-    # note: when you expand a zip using tar in Mojave the expanded 
+    # note: when you expand a zip using tar in Mojave the expanded
     # app will never pass the spctl check
-    
+
     # unzip -o -qq "$archiveName"
-    
+
     # note: githubdesktop fails spctl verification when expanded
     # with unzip
-    
+
     ditto -x -k "$archiveName" "$tmpDir"
     installAppWithPath "$tmpDir/$appName"
 }
@@ -796,7 +796,7 @@ openvpnconnect)
     expectedTeamID="ACV7L3WCD8"
     ;;
 openvpnconnectv3)
-    # credit: @lotnix 
+    # credit: @lotnix
     name="OpenVPN Connect"
     type="pkgInDmg"
     downloadURL="https://openvpn.net/downloads/openvpn-connect-v3-macos.dmg"
@@ -971,7 +971,7 @@ karabinerelements)
     type="pkgInDmg"
     downloadURL=$(downloadURLFromGit pqrs-org Karabiner-Elements)
     expectedTeamID="G43BCU2T37"
-    ;;
+    ;
 postman)
     # credit: Mischa van der Bent
     name="Postman"
@@ -1023,7 +1023,7 @@ signal)
     expectedTeamID="U68MSDN6DR"
     ;;
 docker)
-    # credit: @securitygeneration      
+    # credit: @securitygeneration
     name="Docker"
     type="dmg"
     downloadURL="https://download.docker.com/mac/stable/Docker.dmg"
@@ -1081,7 +1081,7 @@ ringcentralmeetings)
     name="Ring Central Meetings"
     type="pkg"
     downloadURL="http://dn.ringcentral.com/data/web/download/RCMeetings/1210/RCMeetingsClientSetup.pkg"
-    expectedTeamID="M932RC5J66"        
+    expectedTeamID="M932RC5J66"
     blockingProcesses=( "RingCentral Meetings" )
     ;;
 ringcentralapp)
@@ -1089,7 +1089,7 @@ ringcentralapp)
     name="Glip"
     type="dmg"
     downloadURL="https://downloads.ringcentral.com/glip/rc/GlipForMac"
-    expectedTeamID="M932RC5J66"        
+    expectedTeamID="M932RC5J66"
     blockingProcesses=( "Glip" )
     ;;
 sfsymbols)
@@ -1150,12 +1150,12 @@ bettertouchtool)
     expectedTeamID="DAFVSXZ82P"
     ;;
 r)
-    # credit: Tadayuki Onishi (@kenchan0130)        
+    # credit: Tadayuki Onishi (@kenchan0130)
     name="R"
     type="pkg"
     downloadURL=$( curl -fsL https://formulae.brew.sh/api/cask/r.json | sed -n 's/^.*"url":"\([^"]*\)".*$/\1/p' )
     expectedTeamID="VZLD955F6P"
-    ;; 
+    ;;
 8x8)
     # credit: #D-A-James from MacAdmins Slack and Isaac Ordonez, Mann consulting (@mannconsulting)
     name="8x8 Work"
@@ -1262,7 +1262,7 @@ tunnelblick)
     expectedTeamID="Z2SG5H3HC8"
     ;;
 yubikeymanagerqt)
-    # credit: Tadayuki Onishi (@kenchan0130)        
+    # credit: Tadayuki Onishi (@kenchan0130)
     name="YubiKey Manager GUI"
     type="pkg"
     downloadURL="https://developers.yubico.com/yubikey-manager-qt/Releases/$(curl -sfL https://api.github.com/repos/Yubico/yubikey-manager-qt/releases/latest | awk -F '"' '/"tag_name"/ { print $4 }')-mac.pkg"
@@ -1333,7 +1333,7 @@ inkscape)
     type="dmg"
     downloadURL=https://inkscape.org$(inkscapemacurl=$(curl -s -L "https://inkscape.org/release/" | grep -Eio '/release/inkscape-(.*)/mac-os-x/([0-9]*)-([0-9]*)/dl/') && curl -s -L "https://inkscape.org$inkscapemacurl" | grep -Eio 'href="/gallery/item/([0-9]*)/(.*).dmg' | cut -c7-)
     expectedTeamID="SW3D6BB6A6"
-    ;;    
+    ;;
 gimp)
     # credit: Fredrik Larsson (@fredrik_l on MacAdmins Slack)
     name="GIMP"
@@ -1396,7 +1396,7 @@ mattermost)
     type="dmg"
     downloadURL=$(downloadURLFromGit mattermost desktop)
     expectedTeamID="UQ8HT4Q2XM"
-    ;;    
+    ;;
 thunderbird)
     # credit: @N on MacAdmins Slack
     name="Thunderbird"
@@ -1475,7 +1475,7 @@ prism9)
     type="dmg"
     downloadURL="http://cdn.graphpad.com/downloads/prism/9/InstallPrism9.dmg"
     expectedTeamID="YQ2D36NS9M"
-    ;;  
+    ;;
 gpgsuite)
     # credit: Micah Lee (@micahflee)
     name="GPG Suite"
@@ -1518,7 +1518,7 @@ abstract)
     type="zip"
     downloadURL="https://api.goabstract.com/releases/latest/download"
     expectedTeamID="77MZLZE47D"
-    ;;  
+    ;;
 
 # MARK: add new labels above here
 
@@ -1688,7 +1688,12 @@ microsoftdefenderatp)
     updateTool="/Library/Application Support/Microsoft/MAU2.0/Microsoft AutoUpdate.app/Contents/MacOS/msupdate"
     updateToolArguments=( --install --apps WDAV00 )
     ;;
-
+figma)
+    name="Figma"
+    type="zip"
+    downloadURL="https://www.figma.com/download/desktop/mac/"
+    expectedTeamID="T8RA8NE3B7"
+    ;;
 
 # this description is so you can provide all variables as arguments
 # it will only check if the required variables are setting
