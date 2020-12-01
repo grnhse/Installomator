@@ -18,7 +18,7 @@ export PATH=/usr/bin:/bin:/usr/sbin:/sbin
 # set to 0 for production, 1 for debugging
 # while debugging, items will be downloaded to the parent directory of this script
 # also no actual installation will be performed
-DEBUG=1
+DEBUG=0
 
 
 # notify behavior
@@ -971,7 +971,7 @@ karabinerelements)
     type="pkgInDmg"
     downloadURL=$(downloadURLFromGit pqrs-org Karabiner-Elements)
     expectedTeamID="G43BCU2T37"
-    ;
+    ;;
 postman)
     # credit: Mischa van der Bent
     name="Postman"
@@ -1519,6 +1519,13 @@ abstract)
     downloadURL="https://api.goabstract.com/releases/latest/download"
     expectedTeamID="77MZLZE47D"
     ;;
+figma)
+    name="Figma"
+    type="zip"
+    downloadURL="https://www.figma.com/download/desktop/mac/"
+    expectedTeamID="T8RA8NE3B7"
+    appname="Figma"
+    ;;
 
 # MARK: add new labels above here
 
@@ -1688,12 +1695,7 @@ microsoftdefenderatp)
     updateTool="/Library/Application Support/Microsoft/MAU2.0/Microsoft AutoUpdate.app/Contents/MacOS/msupdate"
     updateToolArguments=( --install --apps WDAV00 )
     ;;
-figma)
-    name="Figma"
-    type="zip"
-    downloadURL="https://www.figma.com/download/desktop/mac/"
-    expectedTeamID="T8RA8NE3B7"
-    ;;
+
 
 # this description is so you can provide all variables as arguments
 # it will only check if the required variables are setting
